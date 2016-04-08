@@ -1,3 +1,4 @@
-name: Example
-description: An example plugin. Use this as the base for your own glorious plugins!
+name: Football
+description: Know more about football than your friends? Prove it!
 api: 3
+icon: circle5

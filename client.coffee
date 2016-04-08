@@ -9,17 +9,58 @@ Server = require 'server'
 Ui = require 'ui'
 
 exports.render = ->
-	Ui.button "Fetch Eredivisie", !-> Server.send 'update'
+	Ui.button "Update", !-> Server.send 'fetch'
 
-	Obs.observe !->
-		eredivisie = JSON.parse Db.shared.get('eredivisie')
+	eredivisie = JSON.parse Db.shared.get('eredivisie')
 
-		Dom.h2 eredivisie.leagueTitle
+	info = {
+			'#': 'position',
+			'team': 'teamName',
+			'g': 'playedGames',
+			'p': 'points',
+			'w': 'wins',
+			'd': 'draws',
+			'l': 'losses',
+			'gf': 'goals',
+			'ga': 'goalsAgainst',
+			'gd': 'goalDifference'
+		}
 
-		for team in eredivisie.standing
-			Ui.item !->
-				Dom.div !->
+	#Dom.h2 eredivisie.leagueTitle
+	Ui.item !->
+		for desc of info
+			Dom.div !->
+				if desc is 'team'
 					Dom.style Flex: 1
-					Dom.text team.teamName
+					Dom.text desc
+				else
+					Dom.style
+						width: '25pt'
+						textAlign: 'center'
+						margin: 0
+					Dom.span !->
+						if desc is 'p'
+							Dom.style fontWeight: 'bold'
+						Dom.text desc
+					Dom.text ' |'
+
+	for team in eredivisie.standing
+		Ui.item !->
+			for desc of info
 				Dom.div !->
-					Dom.text team.points
+					attr = info[desc]
+					if desc is 'team'
+						Dom.style Flex: 1
+						Dom.text " " + team[attr]
+					else
+						Dom.style
+							width: '25pt'
+							textAlign: 'center'
+							margin: 0
+
+						Dom.span !->
+							if desc is 'p'
+								Dom.style fontWeight: 'bold'
+
+							Dom.text " " + team[attr]
+						Dom.text "  |"
