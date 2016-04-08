@@ -11,42 +11,56 @@ Ui = require 'ui'
 exports.render = ->
 	Ui.button "Update", !-> Server.send 'fetch'
 
-	eredivisie = JSON.parse Db.shared.get('eredivisie')
+	for i in [1..18]
+		showTeam Db.shared.get 'eredivisie', 'standing', i
 
-	#Dom.h2 eredivisie.leagueTitle
-	Ui.item !->
-		for desc in '# team g p w d l gf g gd'.split(' ')
-			Dom.div !->
-				if desc is 'team'
-					Dom.style Flex: 1
-					Dom.text desc
-				else
-					Dom.style
-						width: '25pt'
-						textAlign: 'center'
-						margin: 0
-					Dom.span !->
-						if desc is 'p'
-							Dom.style fontWeight: 'bold'
-						Dom.text desc
-					Dom.text ' |'
+showTeam = (team) !->
+	collapsed = Obs.create true
+	Obs.observe !->
+		if collapsed.get()
+			Ui.item !->
+				Dom.onTap !-> collapsed.set false
 
-	for team in eredivisie.standing
-		Ui.item !->
-			for attr in 'position teamName playedGames points wins draws losses goals goalsAgainst goalDifference'.split(' ')
 				Dom.div !->
-					if attr is 'teamName'
-						Dom.style Flex: 1
-						Dom.text " " + team[attr]
-					else
+					Dom.style
+						Flex: 1
+						Box: 'horizontal'
+					Dom.div !->
 						Dom.style
-							width: '25pt'
-							textAlign: 'center'
-							margin: 0
+							minWidth: '20px'
+							textAlign: 'right'
+						Dom.text team['position']
+					Dom.img !->
+						Dom.style
+							width: '24px'
+							height: '24px'
+							margin: '0 10px'
+						Dom.prop 'src', team['crestURI']
+					Dom.div !->
+						Dom.style Flex: 1
+						Dom.text team['teamName']
+				Dom.div !->
+					Dom.style
+						fontWeight: 'bold'
+						marginRight: '10px'
+					Dom.text team['points']
+		else
+			# TODO: organize and stylise, looks like shit atm.
+			Dom.div !->
+				Dom.onTap !-> collapsed.set true
+				attrs = 'position teamName playedGames points wins draws losses goals goalsAgainst goalDifference'.split(' ')
+				titles = '# team g p w d l gf g gd'.split(' ')
+				for i in [0...attrs.length]
+					Dom.div !->
+						Dom.text titles[i] + ": " + team[attrs[i]]
 
-						Dom.span !->
-							if attr is 'teamName'
-								Dom.style fontWeight: 'bold'
 
-							Dom.text " " + team[attr]
-						Dom.text "  |"
+		###
+			for desc in '# team g p w d l gf g gd'.split(' ')
+			Dom.div !->
+				if attr is 'teamName'
+					Dom.style Flex: 1
+					Dom.text team[attr]
+				else
+					Dom.text team[attr]
+		###

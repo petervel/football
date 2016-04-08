@@ -1,14 +1,21 @@
 Db = require 'db'
+Http = require 'http'
 
 exports.client_fetch = ->
-	Http = require 'http'
 	Http.get
-		url: 'http://api.football-data.org/alpha/soccerseasons/404/leagueTable'
-		cb: 'edResponse' # corresponds to exports.hnResponse below
+		url: 'http://api.football-data.org/v1/soccerseasons/404/leagueTable'
+		cb: 'leagueResponse' # corresponds to exports.hnResponse below
 
-exports.edResponse = (data) !->
+exports.leagueResponse = (data) !->
 	if data.status == '200 OK'
-		Db.shared.set 'eredivisie', data.body
+		eredivisie = JSON.parse data.body
+		standing = {}
+		for team in eredivisie.standing
+			standing[team.position] = team
+
+		eredivisie.standing = standing
+
+		Db.shared.set 'eredivisie', eredivisie
 	else
 		log 'Error code: ' + data.status
 		log 'Error msg: ' + data.error
