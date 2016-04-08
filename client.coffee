@@ -9,7 +9,8 @@ Server = require 'server'
 Ui = require 'ui'
 
 exports.render = ->
-	Ui.button "Update", !-> Server.send 'fetch'
+	if App.userIsAdmin()
+		Ui.button "Update", !-> Server.send 'fetch'
 
 	for i in [1..18]
 		showTeam Db.shared.get 'eredivisie', 'standing', i
