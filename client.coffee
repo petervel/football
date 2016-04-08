@@ -9,59 +9,73 @@ Server = require 'server'
 Ui = require 'ui'
 
 exports.render = ->
-	if App.userIsAdmin()
-		Ui.button "Update", !-> Server.send 'fetch'
-
 	for i in [1..18]
 		showTeam Db.shared.get 'eredivisie', 'standing', i
+
+	if App.userIsAdmin()
+		Ui.button "Update", !-> Server.send 'fetch'
 
 showTeam = (team) !->
 	collapsed = Obs.create true
 	Obs.observe !->
-		if collapsed.get()
-			Ui.item !->
-				Dom.onTap !-> collapsed.set false
+		Ui.item !->
+			Dom.onTap !-> collapsed.set not collapsed.peek()
+			Dom.style
+				Box: 'vertical'
+				justifyContent: 'center'
 
+			Dom.div !->
+				Dom.style
+					Box: 'horizontal'
+					alignItems: 'center'
 				Dom.div !->
 					Dom.style
-						Flex: 1
-						Box: 'horizontal'
-					Dom.div !->
-						Dom.style
-							minWidth: '20px'
-							textAlign: 'right'
-						Dom.text team['position']
-					Dom.img !->
-						Dom.style
-							width: '24px'
-							height: '24px'
-							margin: '0 10px'
-						Dom.prop 'src', team['crestURI']
-					Dom.div !->
-						Dom.style Flex: 1
-						Dom.text team['teamName']
+						minWidth: '20px'
+						textAlign: 'right'
+					Dom.text team['position']
+				Dom.img !->
+					Dom.style
+						width: '24px'
+						height: '24px'
+						margin: '0 10px'
+					Dom.prop 'src', team['crestURI']
+				Dom.div !->
+					Dom.style Flex: 1
+					Dom.text team['teamName']
+
 				Dom.div !->
 					Dom.style
 						fontWeight: 'bold'
+						width: '30px'
+						textAlign: 'right'
 						marginRight: '10px'
 					Dom.text team['points']
-		else
-			# TODO: organize and stylise, looks like shit atm.
-			Dom.div !->
-				Dom.onTap !-> collapsed.set true
-				attrs = 'position teamName playedGames points wins draws losses goals goalsAgainst goalDifference'.split(' ')
-				titles = '# team g p w d l gf g gd'.split(' ')
-				for i in [0...attrs.length]
-					Dom.div !->
-						Dom.text titles[i] + ": " + team[attrs[i]]
 
+			return if collapsed.get()
 
-		###
-			for desc in '# team g p w d l gf g gd'.split(' ')
 			Dom.div !->
-				if attr is 'teamName'
-					Dom.style Flex: 1
-					Dom.text team[attr]
-				else
-					Dom.text team[attr]
-		###
+				Dom.style
+					Box: 'horizontal'
+					justifyContent: 'center'
+
+				Dom.div !->
+					Dom.style width: '120px'
+					Dom.span !->
+						Dom.style fontWeight: 'bold'
+						Dom.text "P: #{team['playedGames']} "
+					Dom.span !->
+						Dom.style color: 'grey'
+						Dom.text "(#{team['wins']}-#{team['draws']}-#{team['losses']})"
+
+				Dom.div !->
+					Dom.style width: '30px'
+
+				Dom.div !->
+					Dom.style width: '120px'
+					Dom.span !->
+						Dom.style fontWeight: 'bold'
+						Dom.text "GD: #{team['goalDifference']} "
+					Dom.span !->
+						Dom.style color: 'grey'
+						Dom.text "(#{team['goals']}-#{team['goalsAgainst']})"
+
