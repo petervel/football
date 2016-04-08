@@ -13,22 +13,9 @@ exports.render = ->
 
 	eredivisie = JSON.parse Db.shared.get('eredivisie')
 
-	info = {
-			'#': 'position',
-			'team': 'teamName',
-			'g': 'playedGames',
-			'p': 'points',
-			'w': 'wins',
-			'd': 'draws',
-			'l': 'losses',
-			'gf': 'goals',
-			'ga': 'goalsAgainst',
-			'gd': 'goalDifference'
-		}
-
 	#Dom.h2 eredivisie.leagueTitle
 	Ui.item !->
-		for desc of info
+		for desc in '# team g p w d l gf g gd'.split(' ')
 			Dom.div !->
 				if desc is 'team'
 					Dom.style Flex: 1
@@ -46,10 +33,9 @@ exports.render = ->
 
 	for team in eredivisie.standing
 		Ui.item !->
-			for desc of info
+			for attr in 'position teamName playedGames points wins draws losses goals goalsAgainst goalDifference'.split(' ')
 				Dom.div !->
-					attr = info[desc]
-					if desc is 'team'
+					if attr is 'teamName'
 						Dom.style Flex: 1
 						Dom.text " " + team[attr]
 					else
@@ -59,7 +45,7 @@ exports.render = ->
 							margin: 0
 
 						Dom.span !->
-							if desc is 'p'
+							if attr is 'teamName'
 								Dom.style fontWeight: 'bold'
 
 							Dom.text " " + team[attr]
