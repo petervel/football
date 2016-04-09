@@ -8,7 +8,7 @@ Page = require 'page'
 Server = require 'server'
 Ui = require 'ui'
 
-leagueIds = ['eredivisie', 'epl', 'laliga']
+leagueIds = ['eredivisie', 'epl', 'laliga', 'bl', 'serieA', 'ligue1']
 
 exports.render = ->
 	selectedLeague = Obs.create('eredivisie')
@@ -17,12 +17,19 @@ exports.render = ->
 		Dom.style
 			Box: 'horizontal'
 			justifyContent: 'center'
-		for leagueId in leagueIds then do (leagueId) !->
-			Ui.button Db.shared.get(leagueId, 'leagueCaption'), !-> selectedLeague.set leagueId
+		Dom.select !->
+			me = Dom.get()
+			Dom.on 'change', !-> selectedLeague.set me.value()
+			for leagueId in leagueIds then do (leagueId) !->
+				Dom.option !->
+					Dom.prop 'value', leagueId
+					Dom.text Db.shared.get(leagueId, 'leagueCaption')
 
 	Obs.observe !->
-		for i in [1..18]
-			showTeam Db.shared.get selectedLeague.get(), 'standing', i
+		teamCount = Db.shared.get selectedLeague.get(), 'teamCount'
+		for i in [1..teamCount]
+			team = Db.shared.get selectedLeague.get(), 'standing', i
+			if team? then showTeam team
 
 	if App.userIsAdmin()
 		Ui.button "Update", !-> Server.send 'fetch'
