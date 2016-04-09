@@ -17,6 +17,7 @@ exports.render = ->
 		Dom.style
 			Box: 'horizontal'
 			justifyContent: 'center'
+			margin: '16px 0'
 		Dom.select !->
 			me = Dom.get()
 			Dom.on 'change', !-> selectedLeague.set me.value()
@@ -26,7 +27,7 @@ exports.render = ->
 					Dom.text Db.shared.get(leagueId, 'leagueCaption')
 
 	Obs.observe !->
-		standing = Db.shared.iterate selectedLeague.get(), 'standing', showTeam, (team) -> team.get 'position'
+		Db.shared.iterate selectedLeague.get(), 'standing', showTeam, (team) -> team.get 'position'
 
 	if App.userIsAdmin()
 		Ui.button "Update", !-> Server.send 'updateData'

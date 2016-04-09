@@ -16,6 +16,7 @@ exports.onInstall = exports.onUpgrade = exports.client_updateData = exports.upda
 	log 'updating leagues'
 	for name, id of leagues
 		Http.get
+			headers: {'X-Auth-Token': 'cbe3ab2ba1bd47a58d60d0b2fa19f9d8'}
 			url: "http://api.football-data.org/v1/soccerseasons/#{id}/leagueTable"
 			cb: ['leagueResponse', name]
 	# update again in an hour
