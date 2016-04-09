@@ -26,13 +26,10 @@ exports.render = ->
 					Dom.text Db.shared.get(leagueId, 'leagueCaption')
 
 	Obs.observe !->
-		teamCount = Db.shared.get selectedLeague.get(), 'teamCount'
-		for i in [1..teamCount]
-			team = Db.shared.get selectedLeague.get(), 'standing', i
-			if team? then showTeam team
+		standing = Db.shared.iterate selectedLeague.get(), 'standing', showTeam, (team) -> team.get 'position'
 
 	if App.userIsAdmin()
-		Ui.button "Update", !-> Server.send 'fetch'
+		Ui.button "Update", !-> Server.send 'updateData'
 
 showTeam = (team) !->
 	collapsed = Obs.create true
@@ -51,16 +48,16 @@ showTeam = (team) !->
 					Dom.style
 						minWidth: '20px'
 						textAlign: 'right'
-					Dom.text team['position']
+					Dom.text team.get 'position'
 				Dom.img !->
 					Dom.style
 						width: '24px'
 						height: '24px'
 						margin: '0 10px'
-					Dom.prop 'src', team['crestURI']
+					Dom.prop 'src', team.get 'crestURI'
 				Dom.div !->
 					Dom.style Flex: 1
-					Dom.text team['teamName']
+					Dom.text team.get 'teamName'
 
 				Dom.div !->
 					Dom.style
@@ -68,7 +65,7 @@ showTeam = (team) !->
 						width: '30px'
 						textAlign: 'right'
 						marginRight: '10px'
-					Dom.text team['points']
+					Dom.text team.get 'points'
 
 			return if collapsed.get()
 
@@ -81,10 +78,10 @@ showTeam = (team) !->
 					Dom.style width: '120px'
 					Dom.span !->
 						Dom.style fontWeight: 'bold'
-						Dom.text "P: #{team['playedGames']} "
+						Dom.text "P: #{team.get 'playedGames'} "
 					Dom.span !->
 						Dom.style color: 'grey'
-						Dom.text "(#{team['wins']}-#{team['draws']}-#{team['losses']})"
+						Dom.text "(#{team.get 'wins'}-#{team.get 'draws'}-#{team.get 'losses'})"
 
 				Dom.div !->
 					Dom.style width: '30px'
@@ -93,8 +90,8 @@ showTeam = (team) !->
 					Dom.style width: '120px'
 					Dom.span !->
 						Dom.style fontWeight: 'bold'
-						Dom.text "GD: #{team['goalDifference']} "
+						Dom.text "GD: #{team.get 'goalDifference'} "
 					Dom.span !->
 						Dom.style color: 'grey'
-						Dom.text "(#{team['goals']}-#{team['goalsAgainst']})"
+						Dom.text "(#{team.get 'goals'}-#{team.get 'goalsAgainst'})"
 

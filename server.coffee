@@ -10,13 +10,9 @@ leagues =
 	serieA: 401
 	ligue1: 396
 
-exports.onInstall =!->
-	exports.updateLeagueData()
+API_TOKEN = 'cbe3ab2ba1bd47a58d60d0b2fa19f9d8' # set as header: "X-Auth-Token"
 
-exports.onUpgrade =!->
-	exports.updateLeagueData()
-
-exports.updateLeagueData = ->
+exports.onInstall = exports.onUpgrade = exports.client_updateData = exports.updateLeagueData = !->
 	log 'updating leagues'
 	for name, id of leagues
 		Http.get
@@ -34,7 +30,7 @@ exports.leagueResponse = (leagueName, data) !->
 		standing = {}
 		teamCount = 0
 		for team in league.standing
-			standing[team.position] = team
+			standing[teamCount] = team
 			teamCount++
 		league.standing = standing
 		league.teamCount = teamCount
