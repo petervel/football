@@ -3,12 +3,12 @@ Http = require 'http'
 Timer = require 'timer'
 
 leagues =
-	eredivisie: 433
-	epl: 426
-	laliga: 436
-	bl: 430
-	serieA: 438
-	ligue1: 434
+	eredivisie: 449
+	epl: 445
+	laliga: 455
+	bl: 452
+	serieA: 456
+	ligue1: 450
 
 API_TOKEN = 'cbe3ab2ba1bd47a58d60d0b2fa19f9d8' # set as header: "X-Auth-Token"
 
